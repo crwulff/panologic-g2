@@ -92,10 +92,16 @@ case class CpuTop(panoConfig: PanoConfig) extends Component {
     //============================================================
     // Debug
     //============================================================
-    val icon = new ICON(nSlaves = 1, jtagChain = 2)
-    u_cpu.io.jtag.tdi := icon.io.tdi
-    u_cpu.io.jtag.tms := icon.io.cmd_sel(0)(0)
-    u_cpu.io.jtag.tck := icon.io.drck
-    icon.io.tdo(0) := u_cpu.io.jtag.tdo
+    val icon = new ICON(nSlaves = 2, jtagChain = 2)
 
+    val xsdbm = new XSDBMaster(nSlaves = 1)
+    xsdbm.io.drck    := icon.io.drck
+    xsdbm.io.tdi     := icon.io.tdi
+    icon.io.tdo(0)   := xsdbm.io.tdo
+    xsdbm.io.cmd_sel := icon.io.cmd_sel(0)
+
+    u_cpu.io.jtag.tdi := icon.io.tdi
+    u_cpu.io.jtag.tms := icon.io.cmd_sel(1)(0)
+    u_cpu.io.jtag.tck := icon.io.drck
+    icon.io.tdo(1) := u_cpu.io.jtag.tdo
 }

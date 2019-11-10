@@ -1,11 +1,9 @@
 
-
 package spartan6
 
 import spinal.core._
 
 import spinal.lib._
-import spinal.lib.fsm._
 
 import spartan6._
 
@@ -104,7 +102,7 @@ class ICONCore(nSlaves : Integer) extends Component {
         val CORE_ALPHA = 1
         val STATUS_VEC = B(nSlaves, 4 bits) ## B(CORE_ALPHA, 8 bits) ## B(CORE_MINOR, 8 bits) ## B(CORE_MAJOR, 4 bits) ## B(BUILD, 8 bits) ## B(MAJOR, 4 bits) ## B(MINOR, 4 bits) ## B(CORE_TYPE, 8 bits) ## B(MANUFACTURER, 8 bits) ## B("8'x01")
 
-        val statData = STATUS_VEC.asBools //Mem(Bool, STATUS_VEC.asBools)
+        val statData = STATUS_VEC.asBools
         val statCtr = Counter(0, 63)
         when(SYNC && io.BSCAN_SHIFT && core === 15 && command === 0 && group === 0){
             statCtr.increment()
