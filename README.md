@@ -1,5 +1,7 @@
 # Pano Logic Zero Client G2 
 
+Questions? Try the Pano Logic gitter.im chat room! https://gitter.im/panologic/community
+
 ## Introduction
 
 This project contains the reverse engineering results of the Pano Logic Zero Client G2.
@@ -27,6 +29,8 @@ Compared to the G1, the most important improvements of G2 are:
     For the longest time, this device was not supported by the free Xilinx ISE 14.7, and it's still not supported
     by that Linux version. However, there is now an ISE 14.7 for Win10 version that not only supports Spartan-6,
     but it supports the larger devices such as the LX150/LX100 as well!
+
+    Download ISE 14.7 Windows 10 [here](https://www.xilinx.com/support/download/index.html/content/xilinx/en/downloadNav/vivado-design-tools/archive-ise.html).
 
 * 128MByte of DDR2 SDRAM instead of 32MByte of LPDDR SDRAM.
 

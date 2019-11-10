@@ -3,6 +3,7 @@ close [ open ./Pano-generated.ucf w ]
 add_files -fileset constrs_1 -norecurse ../Pano.ucf ./Pano-generated.ucf
 add_files -norecurse ../Pano.v
 add_files -norecurse ../coregen/MIG.xco
+add_files -norecurse ../ise/progmem.bmm
 set_property target_constrs_file ./Pano-generated.ucf [current_fileset -constrset]
 
 generate_target  {synthesis simulation instantiation_template}  [get_files ../coregen/MIG.xco]

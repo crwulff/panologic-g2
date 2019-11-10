@@ -73,22 +73,28 @@ int main() {
     print("Code at github.com/tomverbeure/panologic-g2\n");
 #endif
 
-#if 0
-    // Basis ULPI bus monitoring.
-    ulpi_print_id();
-    ulpi_reset_bus();
-    ulpi_monitor_rx_cmd();      // This is an endless loop
+#if 1
+    // Basic test that dumps received packets on the GMII interface
+    print("GMII Bringup\n");
+    print("============\n");
+    gmii_mdio_init();
+    gmii_reg_dump(0);
+    gmii_print_phy_id(0);
+
+    print("Plug in ethernet cable to complete auto-negotation...\n");
+    gmii_wait_auto_neg_complete(0);
+
+    gmii_reg_dump(0);
+    print("\n");
 #endif
 
 #if 1
-    // Basic test that dumps received packets on the GMII interface
-    gmii_mdio_init();
-    //gmii_reg_dump(0);
-    //gmii_print_phy_id(0);
-    gmii_wait_auto_neg_complete(0);
-    //gmii_reg_dump(0);
+    // Basis ULPI bus monitoring.
+    print("USB Bringup\n");
+    print("===========\n");
 
-    gmii_dump_packets(0);
+    ulpi_print_id();
+    ulpi_reset_bus();
 #endif
 #if 0
     // SPI Flash test (read first 256 bytes)
@@ -154,6 +160,9 @@ int main() {
 #endif
 #endif
 
+
+    gmii_dump_packets(0);
+    ulpi_monitor_rx_cmd();      // This is an endless loop
 
 #if 0
     // This test simply loops through test patterns.

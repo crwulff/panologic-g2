@@ -11,7 +11,7 @@ i2c_ctx_t dvi_ctrl_i2c_ctx;
 
 void dvi_ctrl_init()
 {
-    dvi_ctrl_i2c_ctx.base_addr = 0;
+    dvi_ctrl_i2c_ctx.base_addr = DVI_CTRL_BASE_ADDR;
     dvi_ctrl_i2c_ctx.scl_pin_nr = 0;
     dvi_ctrl_i2c_ctx.sda_pin_nr = 1;
 
@@ -21,6 +21,8 @@ void dvi_ctrl_init()
         {   0x1c,       0x00},              // 1x DDR clocking
         {   0x1d,       0x40},              // internal clock delay
         {   0x1f,       0x80},              // input data format. Bit 4: vsp, bit 4: hsp
+
+        {   0x21,       0x09},              // Enable VGA
 
 #if 0
         // clk <= 65Mhz

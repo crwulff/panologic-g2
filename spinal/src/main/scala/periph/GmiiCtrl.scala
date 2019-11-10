@@ -15,7 +15,7 @@ case class GmiiRxCtrl() extends Component {
         val rx_fifo_rd_count    = out(UInt(16 bits))
     }
 
-    val rx_bufg = new BUFH()
+    val rx_bufg = new BUFG()
     rx_bufg.io.I <> io.rx.clk
 
     val gmiiRxDomain = ClockDomain(
@@ -28,15 +28,24 @@ case class GmiiRxCtrl() extends Component {
 
     val rx_domain = new ClockingArea(gmiiRxDomain) {
 
-        val rxDv = Reg(Bool)
-        val rxEr = Reg(Bool)
-        val rxD  = Reg(Bits(8 bits))
+        val rxDv    = Bool
+        val rxEr    = Bool
+        val rxD     = Bits(8 bits)
+
+        // I tried using IDDR2 cells to have tight control over setup and hold on the IOs, but a hold
+        // time of only 0.5ns, a clock insertion delay of ~4ns, and a short delay between data input and
+        // IDDR2 input FF made it impossible to not violate hold. (I did not experiment with IODELAY2 cells.)
+        // Using core FFs adds more delay in the data path, which makes keeping hold easier.
+        // The double FFs here are added to still allow having 1 FF close to the PAD while the other is
+        // close to the real logic.
+        // Without the "keep = true", ISE merges the 2 FF into a shift register, which means the 2 FFs
+        // are again placed together, and that's not what I wanted.
+        rxDv := RegNext(RegNext(io.rx.dv).addAttribute("keep", "true")).addAttribute("keep", "true")
+        rxEr := RegNext(RegNext(io.rx.er).addAttribute("keep", "true")).addAttribute("keep", "true")
+        rxD  := RegNext(RegNext(io.rx.d).addAttribute("keep", "true")).addAttribute("keep", "true")
+
         val pktErr = Reg(Bool)
         val pktEnd = Reg(Bool)
-
-        rxDv := io.rx.dv
-        rxEr := io.rx.er
-        rxD  := io.rx.d
 
         val rx_fifo_wr = Stream(Bits(10 bits))
         rx_fifo_wr.valid    := (rxDv | rxEr | pktEnd) & rx_fifo_wr.ready

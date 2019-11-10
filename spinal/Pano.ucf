@@ -301,3 +301,16 @@ NET "core_mem/mig_1_/memc?_wrapper_inst/mcb_ui_top_inst/mcb_raw_wrapper_inst/sel
 NET "core_mem/mig_1_/c?_pll_lock" TIG;
 INST "core_mem/mig_1_/memc?_wrapper_inst/mcb_ui_top_inst/mcb_raw_wrapper_inst/gen_term_calib.mcb_soft_calibration_top_inst/mcb_soft_calibration_inst/DONE_SOFTANDHARD_CAL*" TIG;
 NET "core_mem/mig_1_/memc?_wrapper_inst/mcb_ui_top_inst/mcb_raw_wrapper_inst/gen_term_calib.mcb_soft_calibration_top_inst/mcb_soft_calibration_inst/CKE_Train" TIG; ##This path exists for DDR2 only
+
+INST "gmii_rx_d<0>" TNM = gmii_rx_io;
+INST "gmii_rx_d<1>" TNM = gmii_rx_io;
+INST "gmii_rx_d<2>" TNM = gmii_rx_io;
+INST "gmii_rx_d<3>" TNM = gmii_rx_io;
+INST "gmii_rx_d<4>" TNM = gmii_rx_io;
+INST "gmii_rx_d<5>" TNM = gmii_rx_io;
+INST "gmii_rx_d<6>" TNM = gmii_rx_io;
+INST "gmii_rx_d<7>" TNM = gmii_rx_io;
+INST "gmii_rx_er" TNM = gmii_rx_io;
+INST "gmii_rx_dv" TNM = gmii_rx_io;
+TIMEGRP "gmii_rx_io" OFFSET = IN 0 ns VALID 3 ns BEFORE "gmii_rx_clk" RISING;
+

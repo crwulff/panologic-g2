@@ -133,7 +133,7 @@ void gmii_phy_identifier(int phy_addr, uint32_t *oui, uint32_t *model_nr, uint32
     *rev_nr   = (rdata3 >> 0) & ((1<<4)-1);
 }
 
-#if 0
+#if 1
 void gmii_reg_dump(int phy_addr)
 {
     int rdata;
@@ -176,7 +176,7 @@ void gmii_wait_auto_neg_complete(int phy_addr)
     } while(!(rdata & (1<<5)));
 }
 
-#if 0
+#if 1
 void gmii_print_phy_id(int phy_addr)
 {
     uint32_t oui, model_nr, rev_nr;
@@ -743,7 +743,9 @@ void gmii_dump_packets()
         }
 
         unsigned int rx_data = REG_RD(GMII_RX_FIFO_RD);
-        if (((rx_data & 0x10000) == 0) || ((rx_data & 0x200) == 0)){
+        int rx_has_data = (rx_data >> GMII_RX_FIFO_RD_VALID_BIT) & 1;
+        int rx_data_valid = (rx_data >> GMII_RX_FIFO_RD_DV_BIT) & 1; // packet separator
+        if (!rx_has_data || !rx_data_valid){
             if (had_data){
 #if DUMP_RX_PACKETS
                 print_int(had_data, 1);
