@@ -47,9 +47,13 @@ void print(char *str)
     while(*str != '\0'){
         if (*str == '\n'){
             next_line();
-
             ++str;
             continue;
+        }
+        else if(*str == '\r') {
+           ++str;
+           cur_x = 0;
+           continue;
         }
         TXT_BUF[cur_y * txt_buf_width + cur_x] = *str;
         ++str;

@@ -36,6 +36,8 @@ void wait(int cycles)
 #endif
 }
 
+void DDR_memtest(void);
+
 
 #define WAIT_CYCLES 500000
 
@@ -62,6 +64,7 @@ int main() {
 #if 1
     clear();
     print("Pano Logic G2 Reverse Engineering\n");
+    print("Compiled " __DATE__ " " __TIME__ "\n\n");
     print("---------------------------------\n");
     print("\n");
     print("Spartan-6 LX150 FPGA\n");
@@ -77,7 +80,7 @@ int main() {
     ulpi_monitor_rx_cmd();      // This is an endless loop
 #endif
 
-#if 1
+#if 0
     // Basic test that dumps received packets on the GMII interface
     gmii_mdio_init();
     //gmii_reg_dump(0);
@@ -87,7 +90,7 @@ int main() {
 
     gmii_dump_packets(0);
 #endif
-#if 1
+#if 0
     // SPI Flash test (read first 256 bytes)
     uint32_t address = 0x00000000;
     *(volatile uint32_t*)0x80000708 = 0x00000000; // config
@@ -105,7 +108,7 @@ int main() {
 
         for (int i=0; i<16; i++) {
             *(volatile uint32_t*)0x80000700 = 0x01000000; // Read Data
-	}
+   }
 
         *(volatile uint32_t*)0x80000700 = 0x10000000; // SS Disable
 
@@ -123,29 +126,32 @@ int main() {
 
 #if 1 // Memory test
 
+#if 0
     while (!button_pressed()){}
-
     print("Ram test:\n");
     for (int i=0; i<64; i++) {
-	*(volatile uint32_t*)(0x40000000 + i*4) = i;
+   *(volatile uint32_t*)(0x40000000 + i*4) = i;
     }
     print("Write Done, Reading\n");
     for (int i=0; i<64; i++) {
-	print_int(*(volatile uint32_t*)(0x40000000 + i*4), 1);
-	print(" ");
+   print_int(*(volatile uint32_t*)(0x40000000 + i*4), 1);
+   print(" ");
     }
     print("\n");
 
     print("Ram 2 test:\n");
     for (int i=0; i<64; i++) {
-	*(volatile uint32_t*)(0x44000000 + i*4) = i;
+   *(volatile uint32_t*)(0x44000000 + i*4) = i;
     }
     print("Write Done, Reading\n");
     for (int i=0; i<64; i++) {
-	print_int(*(volatile uint32_t*)(0x44000000 + i*4), 1);
-	print(" ");
+   print_int(*(volatile uint32_t*)(0x44000000 + i*4), 1);
+   print(" ");
     }
     print("\n");
+#else
+    DDR_memtest();
+#endif
 #endif
 
 
@@ -185,3 +191,57 @@ int main() {
         }
     }
 }
+
+uint32_t DDR_generate_test_word(uint32_t input) {
+   return(input << 24) | (input << 12) | input;
+}
+
+#define DDR (volatile uint32_t *) 0x40000000
+#define ONE_MEGABYTE             0x100000
+#define DDR_TOTAL                (128 * ONE_MEGABYTE)
+
+void DDR_memtest()
+{
+   volatile uint32_t *ptr;
+   volatile uint8_t *base_byte = (uint8_t *)DDR;
+   int i;
+
+   int counter;
+   ptr = DDR;
+   counter = 0;
+   print("Testing DDR\n");
+   print("Filling memory wtih test pattern:\n");
+   for(int i = 0; i < (DDR_TOTAL/ONE_MEGABYTE); i++) {
+      //ptr = DDR + i * (1024/4); 
+      for(int j = 0; j < (ONE_MEGABYTE/4); j++) {
+         *ptr++ = DDR_generate_test_word(counter);
+         counter ++;
+      }
+      print_int(i + 1,1);
+      print("\r");
+   }
+   ptr = DDR;
+   counter = 0;
+   print("\nChecking test pattern:\n");
+   for(i = 0; i < (DDR_TOTAL/ONE_MEGABYTE); i++) { // (DDR_TOTAL/1024)
+      for(int j = 0; j < (ONE_MEGABYTE/4); j++) { // (1024/4)
+         uint32_t dat = *ptr;
+         if(dat != DDR_generate_test_word(counter)) {
+            print("\nFailed at word ");
+            print_int((uint32_t)ptr, 1);
+            print(": ");
+            print_int((uint32_t)(dat), 1);
+            print(" Expected: ");
+            print_int((uint32_t)(DDR_generate_test_word(counter)), 1);
+            print("\n");
+            for( ; ; );
+         }
+         ptr++;
+         counter++;
+      }
+      print_int(i + 1,1);
+      print("\r");
+   }
+   print("\nMemory test passed.\n");
+}
+
