@@ -80,7 +80,7 @@ int main() {
     ulpi_monitor_rx_cmd();      // This is an endless loop
 #endif
 
-#if 0
+#if 1
     // Basic test that dumps received packets on the GMII interface
     gmii_mdio_init();
     //gmii_reg_dump(0);
@@ -124,7 +124,7 @@ int main() {
     } while (address < 256);
 #endif
 
-#if 1 // Memory test
+#if 0 // Memory test
 
 #if 0
     while (!button_pressed()){}
